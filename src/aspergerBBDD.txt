@@ -1,0 +1,226 @@
+drop database if exists aspergerbbdd;
+create database aspergerBBDD;
+
+use aspergerBBDD;
+
+CREATE TABLE IF NOT EXISTS Login(
+`id_usu` BIGINT(10) UNIQUE NOT NULL auto_increment,
+`user` VARCHAR(100) NOT NULL,
+`password` VARCHAR(100) NOT NULL,
+PRIMARY KEY (`id_usu`)
+); 
+
+CREATE TABLE IF NOT EXISTS  Usuario(
+`id` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`nomb_usu` VARCHAR(50) NOT NULL,
+`apellido1_usu` VARCHAR(50),
+`apellido2_usu` VARCHAR(50),
+`dni_usu` VARCHAR (15) NOT NULL,
+`f_nac_usu` DATE,
+`f_pet_terap` DATE ,
+`tlf_usu` VARCHAR(15),
+`email_usu` VARCHAR(50),
+`genero` VARCHAR(15),
+`f_baja` DATE,
+`becado` double(20,3),
+`tipo_beca` VARCHAR(255),
+PRIMARY KEY(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS socio(
+`id_socio2`BIGINT(10) NOT NULL AUTO_INCREMENT,
+`id` BIGINT(10),
+`id_socio` VARCHAR(10),
+`f_alta` DATE NOT NULL,
+`etiq_diag` VARCHAR(20),
+`nom_centro` VARCHAR(50),
+`diagnostico` TINYINT(1) DEFAULT NULL,
+`autorizacion_img` TINYINT(1) DEFAULT NULL,
+`centro_diag` VARCHAR(50),
+`prof_diag` VARCHAR(20),
+`f_diag` DATE ,
+`tlf_domic` VARCHAR(20),
+`direccion` VARCHAR(50) ,
+`cp` VARCHAR(10),
+`distrito` VARCHAR(20),
+`poblacion` VARCHAR(20),
+`provincia` VARCHAR(20),
+`num_cuenta` VARCHAR(30),
+PRIMARY KEY(`id_socio2`),
+FOREIGN KEY (`id`) REFERENCES usuario(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS P_Entrevista(
+`id_entre` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`id` BIGINT(10),
+`f_entrevista` DATE,
+`distrito` VARCHAR(40),
+`nom_centro` VARCHAR(50),
+`diagnostico` TINYINT(1) DEFAULT NULL,
+`diagnostico_anterior` VARCHAR(255),
+`centro_diagnostico` VARCHAR(255),
+`profesional_diagnostico` VARCHAR(255),
+`grado_disc` VARCHAR(50),
+`f_sol_eval_dep` DATE ,
+`nivel_dep_usu` VARCHAR(50),
+`observaciones_dep` VARCHAR(255) ,
+`asist_terapia` TINYINT(1) DEFAULT NULL,
+`obser_deriv_terapia` VARCHAR(255) ,
+`genograma` VARCHAR(255),
+`AC_nece_educ` TINYINT(1) DEFAULT NULL,
+`amigos` TINYINT(1) DEFAULT NULL,
+`observaciones` VARCHAR(255),
+`dific_ref_fam` VARCHAR(255),
+`LOPD` TINYINT(1) DEFAULT NULL,
+PRIMARY KEY(`id_entre`),
+FOREIGN KEY (`id`) REFERENCES usuario(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS diagnostico(
+`id_diag` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`id` BIGINT(10),
+`cp` VARCHAR(10),
+`nom_centro` VARCHAR(50),
+`obs_pet_diag` VARCHAR(255),
+`f_pet_diag` DATE ,
+PRIMARY KEY(`id_diag`),
+FOREIGN KEY (`id`) REFERENCES usuario(`id`)
+);
+
+
+
+CREATE TABLE IF NOT EXISTS Terapia (
+`id_tera` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`id` BIGINT(10),
+`id_socio2` BIGINT(10),
+`nombre_terap` VARCHAR(20) NOT NULL,
+`precio` double NOT NULL,
+`reglas` VARCHAR(255),
+`borrado` boolean default false ,
+PRIMARY KEY(`id_tera`)
+);
+
+CREATE TABLE IF NOT EXISTS Registro_servicio(
+`id_registro_s` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`id` BIGINT(10),
+`id_tera` BIGINT(10),
+`ini_terap` DATE,
+`tarif_mens` DOUBLE,
+`num_sesio_mens` INT,
+`horario` VARCHAR(100),
+`fin_terap` DATE,
+PRIMARY KEY(`id_registro_s`),
+FOREIGN KEY (`id`) REFERENCES usuario(`id`),
+FOREIGN KEY (`id_tera`) REFERENCES Terapia(`id_tera`)
+);
+
+CREATE TABLE IF NOT EXISTS Pagos(
+`id_pagos` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`id` BIGINT(10),
+`id_registro_s` BIGINT(10),
+`id_socio2` BIGINT(10),
+`total_pagos` FLOAT(6,2),
+`alta` tinyint(1) default NULL,
+`baja` tinyint(1) default NULL,
+PRIMARY KEY(`id_pagos`),
+FOREIGN KEY (`id`) REFERENCES usuario(`id`),
+FOREIGN KEY (`id_registro_s`) REFERENCES registro_servicio(`id_registro_s`),
+FOREIGN KEY (`id_socio2`) REFERENCES socio(`id_socio2`)
+);
+
+
+CREATE TABLE IF NOT EXISTS Terapeuta (
+`id_terapeuta` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`id_tera` bigint(10),
+`nombre_terape` VARCHAR(20) NOT NULL,
+`apellido1_terape` VARCHAR(20),
+`telefono_terape` VARCHAR(255),
+`borrado` boolean default false,
+PRIMARY KEY(`id_terapeuta`),
+FOREIGN KEY (`id_tera`) REFERENCES Terapia(`id_tera`)
+);
+
+
+
+CREATE TABLE IF NOT EXISTS  AsociadoPagador(
+`id_asoc` BIGINT(10)  NOT NULL AUTO_INCREMENT,
+`id_entre` BIGINT(10),
+`id` BIGINT(10),
+`id_socio2` BIGINT(10),
+`nom_asoc_fam1_pag` VARCHAR(20),
+`apellido1_asoc_fam1_pag` VARCHAR(20),
+`apellido2_asoc_fam1_pag` VARCHAR(20),
+`dni_asoc_fam1_pag` VARCHAR(20) NOT NULL,
+`profe_asoc_fam1_pag`VARCHAR(20),
+`movil1_asoc_fam1_pag` VARCHAR(20),
+`movil2_asoc_fam1_pag` VARCHAR(20),
+`email_asoc_fam1_pag` VARCHAR(50),
+`relac_asoc_fam1_pag` VARCHAR(20),
+PRIMARY KEY(`id_asoc`),
+FOREIGN KEY (`id_entre`) REFERENCES p_entrevista(`id_entre`),
+FOREIGN KEY (`id`) REFERENCES usuario(`id`),
+FOREIGN KEY (`id_socio2`) REFERENCES socio(`id_socio2`)
+);
+
+CREATE TABLE IF NOT EXISTS  AsociadoFamiliar(
+`id_asoc_fam` BIGINT(10)  NOT NULL AUTO_INCREMENT,
+`id_entre` BIGINT(10),
+`id` BIGINT(10),
+`id_socio2` BIGINT(10),
+`nom_asoc_fam2` VARCHAR (20),
+`apellido1_asoc_fam2` VARCHAR(20),
+`apellido2_asoc_fam2` VARCHAR(20),
+`profe_asoc_fam2` VARCHAR(20),
+`email_asoc_fam2` VARCHAR(50),
+`movil1_asoc_fam2` VARCHAR(20),
+`relac_asoc_fam2` VARCHAR(20),
+PRIMARY KEY(`id_asoc_fam`),
+FOREIGN KEY (`id_entre`) REFERENCES p_entrevista(`id_entre`),
+FOREIGN KEY (`id`) REFERENCES usuario(`id`),
+FOREIGN KEY (`id_socio2`) REFERENCES socio(`id_socio2`)
+);
+
+CREATE TABLE IF NOT EXISTS socio_colaborador(
+`id_c` BIGINT(10) NOT NULL AUTO_INCREMENT,
+`nomb_c` VARCHAR(50) NOT NULL,
+`apellido1_c` VARCHAR(50) NOT NULL,
+`apellido2_c` VARCHAR(50) NOT NULL,
+`dni_c` VARCHAR (15) NOT NULL,
+`f_altac` DATE NOT NULL,
+`tlf_c` VARCHAR(20),
+`emailc` VARCHAR(50) NOT NULL,
+`direccion` VARCHAR(50) NOT NULL,
+`cp_c` VARCHAR(10) NOT NULL,
+`distritoc` VARCHAR(20) NOT NULL,
+`poblacionc` VARCHAR(20) NOT NULL,
+`provinciac` VARCHAR(20) NOT NULL,
+`num_cuentac` VARCHAR(30) NOT NULL,
+PRIMARY KEY(`id_c`)
+);
+
+
+
+INSERT INTO Login(`id_usu`, `user`, `password`) VALUES (1,'AspergerMadrid','Asperger2020');
+INSERT INTO Login(`id_usu`, `user`, `password`) VALUES (2,'eliminar','Administracion2020');
+INSERT INTO Login(`id_usu`, `user`, `password`) VALUES (3,'pagos','Administracion2020');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
